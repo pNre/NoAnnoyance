@@ -3,6 +3,10 @@
 
 #define SETTINGS_FILE @"/var/mobile/Library/Preferences/com.pNre.noannoyance.plist"
 
+#define getBit(value, bit)      (value & (1 << bit))
+#define setBit(value, bit)      (value | (1 << bit))
+#define clearBit(value, bit)    (value & ~(1 << bit))
+
 static bool IMPROVE_LOCATION_ACCURACY_WIFI = YES;
 static bool EDGE_ALERT = YES;
 static bool UNSUPPORTED_CHARGING_ACCESSORY = YES;
@@ -33,9 +37,9 @@ static NSString * IMPROVE_LOCATION_ACCURACY_WIFI_string = nil;
         return;
     }
 
-    BOOL &_isConnectedToUnsupportedChargingAccessory = MSHookIvar<BOOL>(self, "_isConnectedToUnsupportedChargingAccessory");
+    int &_isConnectedToUnsupportedChargingAccessory = MSHookIvar<int>(self, "_isConnectedToUnsupportedChargingAccessory");
 
-    _isConnectedToUnsupportedChargingAccessory = NO;
+    _isConnectedToUnsupportedChargingAccessory = clearBit(_isConnectedToUnsupportedChargingAccessory, 4);
 
 }
 
