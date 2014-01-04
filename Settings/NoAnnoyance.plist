@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>title</key>
+	<string>NoAnnoyance</string>
+	<key>entry</key>
+	<dict>
+		<key>cell</key>
+		<string>PSLinkCell</string>
+		<key>icon</key>
+		<string>/Library/PreferenceLoader/Preferences/NoAnnoyance/NoAnnoyance.png</string>
+		<key>label</key>
+		<string>NoAnnoyance</string>
+	</dict>
+	<key>items</key>
+	<array>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>Data</string>
+		</dict>
+		<dict>
+			<key>default</key>
+			<true/>
+			<key>key</key>
+			<string>EDGE_ALERT</string>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>PostNotification</key>
+			<string>com.pNre.noannoyance/settingsupdated</string>
+			<key>label</key>
+			<string>Cellular data is not enabled</string>
+			<key>defaults</key>
+			<string>com.pNre.noannoyance</string>
+		</dict>
+		<dict>
+			<key>default</key>
+			<true/>
+			<key>key</key>
+			<string>AIRPLANE_CELL_PROMPT</string>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>PostNotification</key>
+			<string>com.pNre.noannoyance/settingsupdated</string>
+			<key>label</key>
+			<string>Disable airp. mode to access data</string>
+			<key>defaults</key>
+			<string>com.pNre.noannoyance</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>Location</string>
+		</dict>
+		<dict>
+			<key>default</key>
+			<true/>
+			<key>key</key>
+			<string>IMPROVE_LOCATION_ACCURACY_WIFI</string>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>PostNotification</key>
+			<string>com.pNre.noannoyance/settingsupdated</string>
+			<key>label</key>
+			<string>Location accuracy improved by enabling Wi-Fi</string>
+			<key>defaults</key>
+			<string>com.pNre.noannoyance</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>Accessories</string>
+			<key>footerText</key>
+			<string>NoAnnoyance is a pNre production.</string>
+			<key>isStaticText</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>default</key>
+			<true/>
+			<key>key</key>
+			<string>UNSUPPORTED_CHARGING_ACCESSORY</string>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>PostNotification</key>
+			<string>com.pNre.noannoyance/settingsupdated</string>
+			<key>label</key>
+			<string>Cable not certified</string>
+			<key>defaults</key>
+			<string>com.pNre.noannoyance</string>
+		</dict>
+	</array>
+</dict>
+</plist>
