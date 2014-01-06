@@ -9,6 +9,8 @@ Supported alerts:
 + Disable airplane mode to access data
 + Location accuracy improved by enabling Wi-Fi
 + Cable not certified
++ Low battery
++ Cellular data is turned off for "AppName" disabled
 
 ---
 
