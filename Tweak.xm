@@ -3,10 +3,6 @@
 
 #define SETTINGS_FILE @"/var/mobile/Library/Preferences/com.pNre.noannoyance.plist"
 
-#define getBit(value, bit)      (value & (1 << bit))
-#define setBit(value, bit)      (value | (1 << bit))
-#define clearBit(value, bit)    (value & ~(1 << bit))
-
 static bool IMPROVE_LOCATION_ACCURACY_WIFI = YES;
 static bool EDGE_ALERT = YES;
 static bool UNSUPPORTED_CHARGING_ACCESSORY = YES;
@@ -32,6 +28,16 @@ static NSString * CELLULAR_DATA_IS_TURNED_OFF_FOR_APP_NAME_string = nil;
 
 @end
 
+struct ChargingInfo {
+    unsigned _ignoringEvents : 1;
+    unsigned _lastVolumeDownToControl : 1;
+    unsigned _isBatteryCharging : 1;
+    unsigned _isOnAC : 1;
+    unsigned _isConnectedToUnsupportedChargingAccessory : 1;
+    unsigned _isConnectedToChargeIncapablePowerSource : 1;
+    unsigned _allowAlertWindowRotation : 1;
+};
+
 %hook SBUIController
 
 - (void)setIsConnectedToUnsupportedChargingAccessory:(BOOL)isConnectedToUnsupportedChargingAccessory {
@@ -41,9 +47,9 @@ static NSString * CELLULAR_DATA_IS_TURNED_OFF_FOR_APP_NAME_string = nil;
         return;
     }
 
-    int &_isConnectedToUnsupportedChargingAccessory = MSHookIvar<int>(self, "_isConnectedToUnsupportedChargingAccessory");
+    struct ChargingInfo &chargingInfo = MSHookIvar<struct ChargingInfo>(self, "_isConnectedToUnsupportedChargingAccessory");
+    chargingInfo._isConnectedToUnsupportedChargingAccessory = NO;
 
-    _isConnectedToUnsupportedChargingAccessory = clearBit(_isConnectedToUnsupportedChargingAccessory, 4);
 }
 
 %end
