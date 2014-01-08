@@ -8,7 +8,8 @@ Supported alerts:
 + Cellular data is not enabled
 + Disable airplane mode to access data
 + Location accuracy improved by enabling Wi-Fi
-+ Cable not certified
++ Unsupported charging accessory
++ Accessory unerliable
 + Low battery
 + Cellular data is turned off for "AppName" disabled
 
