@@ -1,0 +1,11 @@
+Package: com.pNre.noannoyance
+Name: NoAnnoyance
+Depends: mobilesubstrate, preferenceloader, firmware (>= 6)
+Version: 0.0.6
+Architecture: iphoneos-arm
+Description: Tame iOS annoying alerts!
+Depiction: http://repo.pnre.co.vu/depics/noannoyance/
+Maintainer: pNre
+Author: pNre
+Section: Tweaks
+Icon: file:///Library/PreferenceLoader/Preferences/NoAnnoyance/NoAnnoyance@2x.png

@@ -1,0 +1,10 @@
+{
+	entry = {
+		bundle = NoAnnoyancePrefs;
+		cell = PSLinkCell;
+		detail = "NoAnnoyancePrefsListController";
+		icon = "NoAnnoyance.png";
+		isController = 1;
+		label = NoAnnoyance;
+	};
+}

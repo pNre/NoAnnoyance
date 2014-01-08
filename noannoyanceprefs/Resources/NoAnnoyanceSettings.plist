@@ -3,16 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>title</key>
-	<string>NoAnnoyance</string>
-	<key>entry</key>
-	<dict>
-		<key>cell</key>
-		<string>PSLinkCell</string>
-		<key>icon</key>
-		<string>/Library/PreferenceLoader/Preferences/NoAnnoyance/NoAnnoyance.png</string>
-		<key>label</key>
-		<string>NoAnnoyance</string>
-	</dict>
+	<string>Alerts</string>
 	<key>items</key>
 	<array>
 		<dict>
@@ -45,7 +36,7 @@
 			<key>PostNotification</key>
 			<string>com.pNre.noannoyance/settingsupdated</string>
 			<key>label</key>
-			<string>Cellular data is turned off for...</string>
+			<string>Cellular data is turned off for</string>
 			<key>defaults</key>
 			<string>com.pNre.noannoyance</string>
 		</dict>
@@ -59,7 +50,7 @@
 			<key>PostNotification</key>
 			<string>com.pNre.noannoyance/settingsupdated</string>
 			<key>label</key>
-			<string>Disable airp. mode to access data</string>
+			<string>No data in airplane mode</string>
 			<key>defaults</key>
 			<string>com.pNre.noannoyance</string>
 		</dict>
@@ -101,7 +92,21 @@
 			<key>PostNotification</key>
 			<string>com.pNre.noannoyance/settingsupdated</string>
 			<key>label</key>
-			<string>Cable not certified</string>
+			<string>Accessory not supported</string>
+			<key>defaults</key>
+			<string>com.pNre.noannoyance</string>
+		</dict>
+		<dict>
+			<key>default</key>
+			<true/>
+			<key>key</key>
+			<string>ACCESSORY_UNRELIABLE</string>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>PostNotification</key>
+			<string>com.pNre.noannoyance/settingsupdated</string>
+			<key>label</key>
+			<string>Accessory not certified</string>
 			<key>defaults</key>
 			<string>com.pNre.noannoyance</string>
 		</dict>
@@ -110,8 +115,6 @@
 			<string>PSGroupCell</string>
 			<key>label</key>
 			<string>Battery</string>
-			<key>footerText</key>
-			<string>NoAnnoyance is a pNre production.</string>
 			<key>isStaticText</key>
 			<true/>
 		</dict>

@@ -1,32 +1,27 @@
 #import <substrate.h>
 #import <CoreFoundation/CoreFoundation.h>
 
+#import <SpringBoard/SBAlertItemsController.h>
+#import <SpringBoard/SBUserNotificationAlert.h>
+
+#import <MobileGestalt/MobileGestalt.h>
+
 #define SETTINGS_FILE @"/var/mobile/Library/Preferences/com.pNre.noannoyance.plist"
 
 static bool IMPROVE_LOCATION_ACCURACY_WIFI = YES;
+
 static bool EDGE_ALERT = YES;
-static bool UNSUPPORTED_CHARGING_ACCESSORY = YES;
-static bool AIRPLANE_CELL_PROMPT = YES;
-static bool LOW_BATTERY_ALERT = YES;
 static bool CELLULAR_DATA_IS_TURNED_OFF_FOR_APP_NAME = YES;
+static bool AIRPLANE_CELL_PROMPT = YES;
+
+static bool UNSUPPORTED_CHARGING_ACCESSORY = YES;
+static bool ACCESSORY_UNRELIABLE = YES;
+
+static bool LOW_BATTERY_ALERT = YES;
 
 static NSString * IMPROVE_LOCATION_ACCURACY_WIFI_string = nil;
 static NSString * CELLULAR_DATA_IS_TURNED_OFF_FOR_APP_NAME_string = nil;
-
-@interface SBAlertItemsController
-
-+ (id)sharedInstance;
-
-- (void)deactivateAlertItem:(id)arg1;
-
-@end
-
-@interface SBUserNotificationAlert
-
-@property(retain) NSString * alertMessage;
-@property(retain) NSString * alertHeader;
-
-@end
+static NSString * ACCESSORY_UNRELIABLE_string = nil;
 
 struct ChargingInfo {
     unsigned _ignoringEvents : 1;
@@ -85,11 +80,13 @@ struct ChargingInfo {
         return;
     }
     
-    if ([alert isKindOfClass:[%c(SBUserNotificationAlert) class]] && IMPROVE_LOCATION_ACCURACY_WIFI)
+    if ([alert isKindOfClass:[%c(SBUserNotificationAlert) class]])
     {
 
-        if ([[alert alertMessage] isEqual:IMPROVE_LOCATION_ACCURACY_WIFI_string] ||
-            [[alert alertMessage] isEqual:CELLULAR_DATA_IS_TURNED_OFF_FOR_APP_NAME_string]) {
+        if (
+            ([[alert alertMessage] isEqual:IMPROVE_LOCATION_ACCURACY_WIFI_string] && IMPROVE_LOCATION_ACCURACY_WIFI) ||
+            ([[alert alertMessage] isEqual:CELLULAR_DATA_IS_TURNED_OFF_FOR_APP_NAME_string] && CELLULAR_DATA_IS_TURNED_OFF_FOR_APP_NAME) ||
+            ([[alert alertMessage] isEqual:ACCESSORY_UNRELIABLE_string] && ACCESSORY_UNRELIABLE)) {
             
             [self deactivateAlertItem:alert];
             return;
@@ -102,8 +99,8 @@ struct ChargingInfo {
 
 %end
 
-void LoadSettings(CFNotificationCenterRef notificationCenterRef, void * arg1, CFStringRef arg2, const void * arg3, CFDictionaryRef dictionary)
-{
+static void reloadSettings() {
+
     NSDictionary * _settingsPlist = [NSDictionary dictionaryWithContentsOfFile:SETTINGS_FILE];
 
     if ([_settingsPlist objectForKey:@"IMPROVE_LOCATION_ACCURACY_WIFI"])
@@ -123,12 +120,24 @@ void LoadSettings(CFNotificationCenterRef notificationCenterRef, void * arg1, CF
 
     if ([_settingsPlist objectForKey:@"LOW_BATTERY_ALERT"])
         LOW_BATTERY_ALERT = [[_settingsPlist objectForKey:@"LOW_BATTERY_ALERT"] boolValue];
+    
+    if ([_settingsPlist objectForKey:@"ACCESSORY_UNRELIABLE"])
+        ACCESSORY_UNRELIABLE = [[_settingsPlist objectForKey:@"ACCESSORY_UNRELIABLE"] boolValue];
 
+}
+
+static void reloadSettingsNotification(CFNotificationCenterRef notificationCenterRef, void * arg1, CFStringRef arg2, const void * arg3, CFDictionaryRef dictionary)
+{
+    reloadSettings();
 }
 
 %ctor {
 
-    //  To load IMPROVE_LOCATION_ACCURACY_WIFI string from its bundle
+    NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
+
+    %init;
+
+    //  load IMPROVE_LOCATION_ACCURACY_WIFI string from its bundle
     NSBundle * coreLocationBundle = [[NSBundle alloc] initWithPath:@"/System/Library/Frameworks/CoreLocation.framework"];
 
     if (coreLocationBundle) {
@@ -138,7 +147,7 @@ void LoadSettings(CFNotificationCenterRef notificationCenterRef, void * arg1, CF
 
     } 
 
-    //  To load IMPROVE_LOCATION_ACCURACY_WIFI string from its bundle
+    //  load IMPROVE_LOCATION_ACCURACY_WIFI string from its bundle
     NSBundle * carrierBundle = [[NSBundle alloc] initWithPath:@"/System/Library/Carrier Bundles/iPhone/Default.bundle"];
 
     if (carrierBundle) {
@@ -148,7 +157,34 @@ void LoadSettings(CFNotificationCenterRef notificationCenterRef, void * arg1, CF
 
     }
 
-    CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, (CFNotificationCallback)LoadSettings, CFSTR("com.pNre.noannoyance/settingsupdated"), NULL, CFNotificationSuspensionBehaviorCoalesce);
-    LoadSettings(NULL, NULL, NULL, NULL, NULL);
+    //  load ACCESSORY_UNRELIABLE string from its bundle
+    NSBundle * IAPBundle = [NSBundle bundleWithIdentifier:@"com.apple.IAP"];
+
+    if (IAPBundle) {
+
+        [IAPBundle load];
+
+        CFStringRef deviceClass = (CFStringRef)MGCopyAnswer(kMGDeviceClass);
+
+        NSString * sDeviceClass = (NSString *)deviceClass;
+        NSMutableString * keyName = [NSMutableString stringWithString:@"ACCESSORY_UNRELIABLE"];
+
+        if ([sDeviceClass isEqualToString:@"iPhone"])
+            [keyName appendString:@"_IPHONE"];
+        else if ([sDeviceClass isEqualToString:@"iPad"])
+            [keyName appendString:@"_IPAD"];
+        else
+            [keyName appendString:@"_IPOD"];
+
+        ACCESSORY_UNRELIABLE_string = [[IAPBundle localizedStringForKey:keyName value:@"" table:@"Framework"] copy];
+
+        CFRelease(deviceClass);
+
+    }
+
+    CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, (CFNotificationCallback)reloadSettingsNotification, CFSTR("com.pNre.noannoyance/settingsupdated"), NULL, CFNotificationSuspensionBehaviorCoalesce);
+    reloadSettings();
+
+    [pool release];
 
 }
