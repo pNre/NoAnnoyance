@@ -12,6 +12,7 @@ Supported alerts:
 + Accessory unerliable
 + Low battery
 + Cellular data is turned off for "AppName" disabled
++ Low disk space
 
 ---
 
