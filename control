@@ -5,7 +5,7 @@ Version: 0.0.7
 Architecture: iphoneos-arm
 Description: Tame iOS annoying alerts!
 Depiction: http://repo.pnre.co.vu/depics/noannoyance/
-Maintainer: pNre
-Author: pNre
+Maintainer: pNre <pnre00+noannoyance@gmail.com>
+Author: pNre <pnre00+noannoyance@gmail.com>
 Section: Tweaks
 Icon: file:///Library/PreferenceLoader/Preferences/NoAnnoyance/NoAnnoyance@2x.png

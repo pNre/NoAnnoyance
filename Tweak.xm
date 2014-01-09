@@ -153,29 +153,25 @@ static void reloadSettingsNotification(CFNotificationCenterRef notificationCente
     //  load IMPROVE_LOCATION_ACCURACY_WIFI string from its bundle
     NSBundle * coreLocationBundle = [[NSBundle alloc] initWithPath:@"/System/Library/Frameworks/CoreLocation.framework"];
 
-    if (coreLocationBundle && [coreLocationBundle load]) {
+    if (coreLocationBundle) {
 
         IMPROVE_LOCATION_ACCURACY_WIFI_string = [[coreLocationBundle localizedStringForKey:@"IMPROVE_LOCATION_ACCURACY_WIFI" value:@"" table:@"locationd"] retain];
-
-        [coreLocationBundle unload];
 
     } 
 
     //  load YOU_CAN_TURN_ON_CELLULAR_DATA_FOR_THIS_APP_IN_SETTINGS string from its bundle
-    NSBundle * carrierBundle = [[NSBundle alloc] initWithPath:@"/System/Library/Carrier Bundles/iPhone/Default.bundle"];
+    NSBundle * carrierBundle = [[NSBundle alloc] initWithPath:@"/var/mobile/Library/CarrierDefault.bundle"];
 
-    if (carrierBundle && [carrierBundle load]) {
+    if (carrierBundle) {
 
         CELLULAR_DATA_IS_TURNED_OFF_FOR_APP_NAME_string = [[carrierBundle localizedStringForKey:@"YOU_CAN_TURN_ON_CELLULAR_DATA_FOR_THIS_APP_IN_SETTINGS" value:@"" table:@"DataUsage"] retain];
-
-        [carrierBundle unload];
 
     }
 
     //  load ACCESSORY_UNRELIABLE string from its bundle
     NSBundle * IAPBundle = [NSBundle bundleWithIdentifier:@"com.apple.IAP"];
 
-    if (IAPBundle && [IAPBundle load]) {
+    if (IAPBundle) {
 
         CFStringRef deviceClass = (CFStringRef)MGCopyAnswer(kMGDeviceClass);
 
@@ -192,9 +188,6 @@ static void reloadSettingsNotification(CFNotificationCenterRef notificationCente
         ACCESSORY_UNRELIABLE_string = [[IAPBundle localizedStringForKey:keyName value:@"" table:@"Framework"] retain];
 
         CFRelease(deviceClass);
-
-        //  unload no longer needed bundle
-        [IAPBundle unload];
 
     }
 
