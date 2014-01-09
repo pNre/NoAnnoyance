@@ -19,6 +19,8 @@ static bool ACCESSORY_UNRELIABLE = YES;
 
 static bool LOW_BATTERY_ALERT = YES;
 
+static bool LOW_DISK_SPACE_ALERT = YES;
+
 static NSString * IMPROVE_LOCATION_ACCURACY_WIFI_string = nil;
 static NSString * CELLULAR_DATA_IS_TURNED_OFF_FOR_APP_NAME_string = nil;
 static NSString * ACCESSORY_UNRELIABLE_string = nil;
@@ -74,10 +76,18 @@ struct ChargingInfo {
         }
     }
 
-    if ([alert isKindOfClass:[%c(SBEdgeActivationAlertItem) class]] && EDGE_ALERT)
-    {
+    if ([alert isKindOfClass:[%c(SBEdgeActivationAlertItem) class]] && EDGE_ALERT) {
+
         [self deactivateAlertItem:alert];
         return;
+
+    }
+
+    if ([alert isKindOfClass:[%c(SBDiskSpaceAlertItem) class]] && LOW_DISK_SPACE_ALERT) {
+
+        [self deactivateAlertItem:alert];
+        return;
+
     }
     
     if ([alert isKindOfClass:[%c(SBUserNotificationAlert) class]])
@@ -124,6 +134,9 @@ static void reloadSettings() {
     if ([_settingsPlist objectForKey:@"ACCESSORY_UNRELIABLE"])
         ACCESSORY_UNRELIABLE = [[_settingsPlist objectForKey:@"ACCESSORY_UNRELIABLE"] boolValue];
 
+    if ([_settingsPlist objectForKey:@"LOW_DISK_SPACE_ALERT"])
+        LOW_DISK_SPACE_ALERT = [[_settingsPlist objectForKey:@"LOW_DISK_SPACE_ALERT"] boolValue];
+
 }
 
 static void reloadSettingsNotification(CFNotificationCenterRef notificationCenterRef, void * arg1, CFStringRef arg2, const void * arg3, CFDictionaryRef dictionary)
@@ -140,29 +153,29 @@ static void reloadSettingsNotification(CFNotificationCenterRef notificationCente
     //  load IMPROVE_LOCATION_ACCURACY_WIFI string from its bundle
     NSBundle * coreLocationBundle = [[NSBundle alloc] initWithPath:@"/System/Library/Frameworks/CoreLocation.framework"];
 
-    if (coreLocationBundle) {
+    if (coreLocationBundle && [coreLocationBundle load]) {
 
-        [coreLocationBundle load];
-        IMPROVE_LOCATION_ACCURACY_WIFI_string = [[coreLocationBundle localizedStringForKey:@"IMPROVE_LOCATION_ACCURACY_WIFI" value:@"" table:@"locationd"] copy];
+        IMPROVE_LOCATION_ACCURACY_WIFI_string = [[coreLocationBundle localizedStringForKey:@"IMPROVE_LOCATION_ACCURACY_WIFI" value:@"" table:@"locationd"] retain];
+
+        [coreLocationBundle unload];
 
     } 
 
-    //  load IMPROVE_LOCATION_ACCURACY_WIFI string from its bundle
+    //  load YOU_CAN_TURN_ON_CELLULAR_DATA_FOR_THIS_APP_IN_SETTINGS string from its bundle
     NSBundle * carrierBundle = [[NSBundle alloc] initWithPath:@"/System/Library/Carrier Bundles/iPhone/Default.bundle"];
 
-    if (carrierBundle) {
+    if (carrierBundle && [carrierBundle load]) {
 
-        [carrierBundle load];
-        CELLULAR_DATA_IS_TURNED_OFF_FOR_APP_NAME_string = [[carrierBundle localizedStringForKey:@"YOU_CAN_TURN_ON_CELLULAR_DATA_FOR_THIS_APP_IN_SETTINGS" value:@"" table:@"DataUsage"] copy];
+        CELLULAR_DATA_IS_TURNED_OFF_FOR_APP_NAME_string = [[carrierBundle localizedStringForKey:@"YOU_CAN_TURN_ON_CELLULAR_DATA_FOR_THIS_APP_IN_SETTINGS" value:@"" table:@"DataUsage"] retain];
+
+        [carrierBundle unload];
 
     }
 
     //  load ACCESSORY_UNRELIABLE string from its bundle
     NSBundle * IAPBundle = [NSBundle bundleWithIdentifier:@"com.apple.IAP"];
 
-    if (IAPBundle) {
-
-        [IAPBundle load];
+    if (IAPBundle && [IAPBundle load]) {
 
         CFStringRef deviceClass = (CFStringRef)MGCopyAnswer(kMGDeviceClass);
 
@@ -176,9 +189,12 @@ static void reloadSettingsNotification(CFNotificationCenterRef notificationCente
         else
             [keyName appendString:@"_IPOD"];
 
-        ACCESSORY_UNRELIABLE_string = [[IAPBundle localizedStringForKey:keyName value:@"" table:@"Framework"] copy];
+        ACCESSORY_UNRELIABLE_string = [[IAPBundle localizedStringForKey:keyName value:@"" table:@"Framework"] retain];
 
         CFRelease(deviceClass);
+
+        //  unload no longer needed bundle
+        [IAPBundle unload];
 
     }
 

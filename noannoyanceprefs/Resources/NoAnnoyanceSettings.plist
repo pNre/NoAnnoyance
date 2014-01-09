@@ -132,6 +132,28 @@
 			<key>defaults</key>
 			<string>com.pNre.noannoyance</string>
 		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>File System</string>
+			<key>isStaticText</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>default</key>
+			<true/>
+			<key>key</key>
+			<string>LOW_DISK_SPACE_ALERT</string>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>PostNotification</key>
+			<string>com.pNre.noannoyance/settingsupdated</string>
+			<key>label</key>
+			<string>Storage almost full</string>
+			<key>defaults</key>
+			<string>com.pNre.noannoyance</string>
+		</dict>
 	</array>
 </dict>
 </plist>

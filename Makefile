@@ -1,3 +1,5 @@
+THEOS_DEVICE_IP = 192.168.1.247
+
 TARGET = iphone:clang::7.0
 
 include theos/makefiles/common.mk
