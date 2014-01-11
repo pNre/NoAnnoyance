@@ -3,27 +3,36 @@
 
 #import <SpringBoard/SBAlertItemsController.h>
 #import <SpringBoard/SBUserNotificationAlert.h>
+#import <SpringBoard/SBApplication.h>
+#import <SpringBoard/SBWorkspace.h>
 
 #import <MobileGestalt/MobileGestalt.h>
 
+#import <UIKit/UIKit.h>
+
 #define SETTINGS_FILE @"/var/mobile/Library/Preferences/com.pNre.noannoyance.plist"
 
-static bool IMPROVE_LOCATION_ACCURACY_WIFI = YES;
+//  
+static BOOL WorksInFullScreen = NO;
 
-static bool EDGE_ALERT = YES;
-static bool CELLULAR_DATA_IS_TURNED_OFF_FOR_APP_NAME = YES;
-static bool AIRPLANE_CELL_PROMPT = YES;
+static BOOL IMPROVE_LOCATION_ACCURACY_WIFI = YES;
 
-static bool UNSUPPORTED_CHARGING_ACCESSORY = YES;
-static bool ACCESSORY_UNRELIABLE = YES;
+static BOOL EDGE_ALERT = YES;
+static BOOL CELLULAR_DATA_IS_TURNED_OFF_FOR_APP_NAME = YES;
+static BOOL AIRPLANE_CELL_PROMPT = YES;
 
-static bool LOW_BATTERY_ALERT = YES;
+static BOOL UNSUPPORTED_CHARGING_ACCESSORY = YES;
+static BOOL ACCESSORY_UNRELIABLE = YES;
 
-static bool LOW_DISK_SPACE_ALERT = YES;
+static BOOL LOW_BATTERY_ALERT = YES;
+
+static BOOL LOW_DISK_SPACE_ALERT = YES;
 
 static NSString * IMPROVE_LOCATION_ACCURACY_WIFI_string = nil;
 static NSString * CELLULAR_DATA_IS_TURNED_OFF_FOR_APP_NAME_string = nil;
 static NSString * ACCESSORY_UNRELIABLE_string = nil;
+
+static SBWorkspace * Workspace = nil;
 
 struct ChargingInfo {
     unsigned _ignoringEvents : 1;
@@ -35,11 +44,52 @@ struct ChargingInfo {
     unsigned _allowAlertWindowRotation : 1;
 };
 
+static BOOL HookInFullScreen() {
+
+    NSString * topApplication = [[Workspace bksWorkspace] topApplication];
+
+    if (!topApplication)
+        return YES;
+
+    SBApplication * runningApp = [Workspace _applicationForBundleIdentifier:topApplication frontmost:YES];
+
+    if (![runningApp statusBarHidden])
+        return YES;
+
+    return WorksInFullScreen;
+
+}
+
+%hook SBWorkspace
+
+- (id)init
+{
+    self = %orig;
+
+    if (self)
+        Workspace = [self retain];
+
+    return self;
+}
+
+- (void)dealloc
+{
+    if (Workspace == self) {
+        [Workspace release];
+        Workspace = nil;
+    }
+
+    %orig;
+}
+
+%end
+
 %hook SBUIController
 
 - (void)setIsConnectedToUnsupportedChargingAccessory:(BOOL)isConnectedToUnsupportedChargingAccessory {
 
-    if (!UNSUPPORTED_CHARGING_ACCESSORY) {
+    if (!UNSUPPORTED_CHARGING_ACCESSORY ||
+        !HookInFullScreen()) {
         %orig;
         return;
     }
@@ -54,6 +104,11 @@ struct ChargingInfo {
 %hook SBAlertItemsController
 
 - (void)activateAlertItem:(id)alert {
+
+    if (!HookInFullScreen()) {
+        %orig;
+        return;
+    }
 
     if ([alert isKindOfClass:[%c(SBLowPowerAlertItem) class]] && LOW_BATTERY_ALERT) {
 
@@ -136,6 +191,9 @@ static void reloadSettings() {
 
     if ([_settingsPlist objectForKey:@"LOW_DISK_SPACE_ALERT"])
         LOW_DISK_SPACE_ALERT = [[_settingsPlist objectForKey:@"LOW_DISK_SPACE_ALERT"] boolValue];
+
+    if ([_settingsPlist objectForKey:@"WorksInFullScreen"])
+        WorksInFullScreen = [[_settingsPlist objectForKey:@"WorksInFullScreen"] boolValue];
 
 }
 

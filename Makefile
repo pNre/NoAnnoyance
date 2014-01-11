@@ -11,7 +11,7 @@ export ARCHS = armv7 arm64
 
 TWEAK_NAME = NoAnnoyance
 NoAnnoyance_FILES = Tweak.xm
-NoAnnoyance_FRAMEWORKS = CoreFoundation
+NoAnnoyance_FRAMEWORKS = CoreFoundation UIKit
 NoAnnoyance_LDFLAGS = -lMobileGestalt
 
 include $(THEOS_MAKE_PATH)/tweak.mk
