@@ -55,6 +55,20 @@
 			<string>com.pNre.noannoyance</string>
 		</dict>
 		<dict>
+			<key>default</key>
+			<true/>
+			<key>key</key>
+			<string>AIRPLANE_DATA_PROMPT</string>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>PostNotification</key>
+			<string>com.pNre.noannoyance/settingsupdated</string>
+			<key>label</key>
+			<string>Turn Off Airplane Mode or Use Wi-Fi</string>
+			<key>defaults</key>
+			<string>com.pNre.noannoyance</string>
+		</dict>
+		<dict>
 			<key>cell</key>
 			<string>PSGroupCell</string>
 			<key>label</key>

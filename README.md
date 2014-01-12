@@ -7,6 +7,7 @@ Supported alerts:
 
 + Cellular data is not enabled
 + Disable airplane mode to access data
++ Turn Off Airplane Mode or Use Wi-Fi to Access Data
 + Location accuracy improved by enabling Wi-Fi
 + Unsupported charging accessory
 + Accessory unerliable

@@ -20,6 +20,7 @@ static BOOL IMPROVE_LOCATION_ACCURACY_WIFI = YES;
 static BOOL EDGE_ALERT = YES;
 static BOOL CELLULAR_DATA_IS_TURNED_OFF_FOR_APP_NAME = YES;
 static BOOL AIRPLANE_CELL_PROMPT = YES;
+static BOOL AIRPLANE_DATA_PROMPT = YES;
 
 static BOOL UNSUPPORTED_CHARGING_ACCESSORY = YES;
 static BOOL ACCESSORY_UNRELIABLE = YES;
@@ -117,16 +118,23 @@ static BOOL HookInFullScreen() {
 
     }
 
-    if ([alert isKindOfClass:[%c(SBLaunchAlertItem) class]] && AIRPLANE_CELL_PROMPT) {
+    if ([alert isKindOfClass:[%c(SBLaunchAlertItem) class]]) {
 
         int _type = MSHookIvar<int>(alert, "_type");
         char _isDataAlert = MSHookIvar<char>(alert, "_isDataAlert");
         char _usesCellNetwork = MSHookIvar<char>(alert, "_usesCellNetwork");
 
-        if (_type == 1 && _isDataAlert != 0 && _usesCellNetwork != 0) {
+        if (_type == 1) {
 
-            [self deactivateAlertItem:alert];
-            return;
+            BOOL cellPrompt = (_isDataAlert != 0 && _usesCellNetwork != 0) && AIRPLANE_CELL_PROMPT;
+            BOOL dataPrompt = (_isDataAlert != 0 && _usesCellNetwork != 1) && AIRPLANE_DATA_PROMPT;
+
+            if (cellPrompt || dataPrompt) {
+
+                [self deactivateAlertItem:alert];
+                return;
+
+            }
 
         }
     }
@@ -191,6 +199,9 @@ static void reloadSettings() {
 
     if ([_settingsPlist objectForKey:@"LOW_DISK_SPACE_ALERT"])
         LOW_DISK_SPACE_ALERT = [[_settingsPlist objectForKey:@"LOW_DISK_SPACE_ALERT"] boolValue];
+    
+    if ([_settingsPlist objectForKey:@"AIRPLANE_DATA_PROMPT"])
+        AIRPLANE_DATA_PROMPT = [[_settingsPlist objectForKey:@"AIRPLANE_DATA_PROMPT"] boolValue];
 
     if ([_settingsPlist objectForKey:@"WorksInFullScreen"])
         WorksInFullScreen = [[_settingsPlist objectForKey:@"WorksInFullScreen"] boolValue];
