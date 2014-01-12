@@ -13,7 +13,7 @@
 #define SETTINGS_FILE @"/var/mobile/Library/Preferences/com.pNre.noannoyance.plist"
 
 //  
-static BOOL WorksInFullScreen = NO;
+static BOOL WorksInFullScreen = YES;
 
 static BOOL IMPROVE_LOCATION_ACCURACY_WIFI = YES;
 
