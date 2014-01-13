@@ -51,14 +51,62 @@ struct ChargingInfo {
     unsigned _allowAlertWindowRotation : 1;
 };
 
+static void reloadSettings() {
+
+    NSDictionary * _settingsPlist = [NSDictionary dictionaryWithContentsOfFile:SETTINGS_FILE];
+
+    if ([_settingsPlist objectForKey:@"IMPROVE_LOCATION_ACCURACY_WIFI"])
+        IMPROVE_LOCATION_ACCURACY_WIFI = [[_settingsPlist objectForKey:@"IMPROVE_LOCATION_ACCURACY_WIFI"] boolValue];
+    
+    if ([_settingsPlist objectForKey:@"EDGE_ALERT"])
+        EDGE_ALERT = [[_settingsPlist objectForKey:@"EDGE_ALERT"] boolValue];
+    
+    if ([_settingsPlist objectForKey:@"UNSUPPORTED_CHARGING_ACCESSORY"])
+        UNSUPPORTED_CHARGING_ACCESSORY = [[_settingsPlist objectForKey:@"UNSUPPORTED_CHARGING_ACCESSORY"] boolValue];
+    
+    if ([_settingsPlist objectForKey:@"AIRPLANE_CELL_PROMPT"])
+        AIRPLANE_CELL_PROMPT = [[_settingsPlist objectForKey:@"AIRPLANE_CELL_PROMPT"] boolValue];
+    
+    if ([_settingsPlist objectForKey:@"CELLULAR_DATA_IS_TURNED_OFF_FOR_APP_NAME"])
+        CELLULAR_DATA_IS_TURNED_OFF_FOR_APP_NAME = [[_settingsPlist objectForKey:@"CELLULAR_DATA_IS_TURNED_OFF_FOR_APP_NAME"] boolValue];
+
+    if ([_settingsPlist objectForKey:@"LOW_BATTERY_ALERT"])
+        LOW_BATTERY_ALERT = [[_settingsPlist objectForKey:@"LOW_BATTERY_ALERT"] boolValue];
+    
+    if ([_settingsPlist objectForKey:@"ACCESSORY_UNRELIABLE"])
+        ACCESSORY_UNRELIABLE = [[_settingsPlist objectForKey:@"ACCESSORY_UNRELIABLE"] boolValue];
+
+    if ([_settingsPlist objectForKey:@"LOW_DISK_SPACE_ALERT"])
+        LOW_DISK_SPACE_ALERT = [[_settingsPlist objectForKey:@"LOW_DISK_SPACE_ALERT"] boolValue];
+    
+    if ([_settingsPlist objectForKey:@"AIRPLANE_DATA_PROMPT"])
+        AIRPLANE_DATA_PROMPT = [[_settingsPlist objectForKey:@"AIRPLANE_DATA_PROMPT"] boolValue];
+
+    if ([_settingsPlist objectForKey:@"CONNECTION_FAILED"])
+        CONNECTION_FAILED = [[_settingsPlist objectForKey:@"CONNECTION_FAILED"] boolValue];
+
+    if ([_settingsPlist objectForKey:@"WorksInFullScreen"])
+        WorksInFullScreen = [[_settingsPlist objectForKey:@"WorksInFullScreen"] boolValue];
+
+}
+
+static void reloadSettingsNotification(CFNotificationCenterRef notificationCenterRef, void * arg1, CFStringRef arg2, const void * arg3, CFDictionaryRef dictionary)
+{
+    reloadSettings();
+}
+
 static BOOL CanHook() {
 
     NSString * topApplication = [[Workspace bksWorkspace] topApplication];
+
+    NSLog(@"CanHook");
 
     if (!topApplication)
         return YES;
 
     SBApplication * runningApp = [Workspace _applicationForBundleIdentifier:topApplication frontmost:YES];
+
+    NSLog(@"%d", [runningApp statusBarHidden]);
 
     if (![runningApp statusBarHidden])
         return YES;
@@ -67,7 +115,7 @@ static BOOL CanHook() {
 
 }
 
-%group SpringBoard
+%group SB
 
 %hook SBWorkspace
 
@@ -207,53 +255,7 @@ static BOOL CanHook() {
 
 %end
 
-static void reloadSettings() {
-
-    NSDictionary * _settingsPlist = [NSDictionary dictionaryWithContentsOfFile:SETTINGS_FILE];
-
-    if ([_settingsPlist objectForKey:@"IMPROVE_LOCATION_ACCURACY_WIFI"])
-        IMPROVE_LOCATION_ACCURACY_WIFI = [[_settingsPlist objectForKey:@"IMPROVE_LOCATION_ACCURACY_WIFI"] boolValue];
-    
-    if ([_settingsPlist objectForKey:@"EDGE_ALERT"])
-        EDGE_ALERT = [[_settingsPlist objectForKey:@"EDGE_ALERT"] boolValue];
-    
-    if ([_settingsPlist objectForKey:@"UNSUPPORTED_CHARGING_ACCESSORY"])
-        UNSUPPORTED_CHARGING_ACCESSORY = [[_settingsPlist objectForKey:@"UNSUPPORTED_CHARGING_ACCESSORY"] boolValue];
-    
-    if ([_settingsPlist objectForKey:@"AIRPLANE_CELL_PROMPT"])
-        AIRPLANE_CELL_PROMPT = [[_settingsPlist objectForKey:@"AIRPLANE_CELL_PROMPT"] boolValue];
-    
-    if ([_settingsPlist objectForKey:@"CELLULAR_DATA_IS_TURNED_OFF_FOR_APP_NAME"])
-        CELLULAR_DATA_IS_TURNED_OFF_FOR_APP_NAME = [[_settingsPlist objectForKey:@"CELLULAR_DATA_IS_TURNED_OFF_FOR_APP_NAME"] boolValue];
-
-    if ([_settingsPlist objectForKey:@"LOW_BATTERY_ALERT"])
-        LOW_BATTERY_ALERT = [[_settingsPlist objectForKey:@"LOW_BATTERY_ALERT"] boolValue];
-    
-    if ([_settingsPlist objectForKey:@"ACCESSORY_UNRELIABLE"])
-        ACCESSORY_UNRELIABLE = [[_settingsPlist objectForKey:@"ACCESSORY_UNRELIABLE"] boolValue];
-
-    if ([_settingsPlist objectForKey:@"LOW_DISK_SPACE_ALERT"])
-        LOW_DISK_SPACE_ALERT = [[_settingsPlist objectForKey:@"LOW_DISK_SPACE_ALERT"] boolValue];
-    
-    if ([_settingsPlist objectForKey:@"AIRPLANE_DATA_PROMPT"])
-        AIRPLANE_DATA_PROMPT = [[_settingsPlist objectForKey:@"AIRPLANE_DATA_PROMPT"] boolValue];
-
-    if ([_settingsPlist objectForKey:@"CONNECTION_FAILED"])
-        CONNECTION_FAILED = [[_settingsPlist objectForKey:@"CONNECTION_FAILED"] boolValue];
-
-    if ([_settingsPlist objectForKey:@"WorksInFullScreen"])
-        WorksInFullScreen = [[_settingsPlist objectForKey:@"WorksInFullScreen"] boolValue];
-
-}
-
-static void reloadSettingsNotification(CFNotificationCenterRef notificationCenterRef, void * arg1, CFStringRef arg2, const void * arg3, CFDictionaryRef dictionary)
-{
-    reloadSettings();
-}
-
-static void initializeMailHooks() {
-
-    %init(Mail);
+static void initializeMailStrings() {
 
     //  load CONNECTION_FAILED string from its bundle
     NSBundle * messageBundle = [[NSBundle alloc] initWithPath:@"/System/Library/PrivateFrameworks/Message.framework"];
@@ -268,9 +270,7 @@ static void initializeMailHooks() {
 
 }
 
-static void initializeSpringBoardHooks() {
-
-    %init(SpringBoard);
+static void initializeSpringBoardStrings() {
 
     //  load IMPROVE_LOCATION_ACCURACY_WIFI string from its bundle
     NSBundle * coreLocationBundle = [[NSBundle alloc] initWithPath:@"/System/Library/Frameworks/CoreLocation.framework"];
@@ -322,12 +322,17 @@ static void initializeSpringBoardHooks() {
 
     NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
 
-    if ([[[NSBundle mainBundle] bundleIdentifier] caseInsensitiveCompare:@"com.apple.mobilemail"]) {
+    NSString * bundleId = [[NSBundle mainBundle] bundleIdentifier];
+
+    if ([bundleId caseInsensitiveCompare:@"com.apple.mobilemail"] == NSOrderedSame) {
         //  time to hook mail
-        initializeMailHooks();
-    } else {
+        %init(Mail);
+        initializeMailStrings();
+    } else if ([bundleId caseInsensitiveCompare:@"com.apple.springboard"] == NSOrderedSame) {
         //  hook springboard
-        initializeSpringBoardHooks();
+        %init(SB);
+        initializeSpringBoardStrings();
+
     }
 
     CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, (CFNotificationCallback)reloadSettingsNotification, CFSTR("com.pNre.noannoyance/settingsupdated"), NULL, CFNotificationSuspensionBehaviorCoalesce);
