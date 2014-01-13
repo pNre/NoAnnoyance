@@ -12,9 +12,10 @@
 
 #define SETTINGS_FILE @"/var/mobile/Library/Preferences/com.pNre.noannoyance.plist"
 
-//  
+//  Global
 static BOOL WorksInFullScreen = YES;
 
+//  SpringBoard
 static BOOL IMPROVE_LOCATION_ACCURACY_WIFI = YES;
 
 static BOOL EDGE_ALERT = YES;
@@ -33,6 +34,11 @@ static NSString * IMPROVE_LOCATION_ACCURACY_WIFI_string = nil;
 static NSString * CELLULAR_DATA_IS_TURNED_OFF_FOR_APP_NAME_string = nil;
 static NSString * ACCESSORY_UNRELIABLE_string = nil;
 
+//  Mail
+static BOOL CONNECTION_FAILED = YES;
+
+static NSString * CONNECTION_FAILED_string = nil;
+
 static SBWorkspace * Workspace = nil;
 
 struct ChargingInfo {
@@ -45,7 +51,7 @@ struct ChargingInfo {
     unsigned _allowAlertWindowRotation : 1;
 };
 
-static BOOL HookInFullScreen() {
+static BOOL CanHook() {
 
     NSString * topApplication = [[Workspace bksWorkspace] topApplication];
 
@@ -60,6 +66,8 @@ static BOOL HookInFullScreen() {
     return WorksInFullScreen;
 
 }
+
+%group SpringBoard
 
 %hook SBWorkspace
 
@@ -90,7 +98,7 @@ static BOOL HookInFullScreen() {
 - (void)setIsConnectedToUnsupportedChargingAccessory:(BOOL)isConnectedToUnsupportedChargingAccessory {
 
     if (!UNSUPPORTED_CHARGING_ACCESSORY ||
-        !HookInFullScreen()) {
+        !CanHook()) {
         %orig;
         return;
     }
@@ -106,7 +114,7 @@ static BOOL HookInFullScreen() {
 
 - (void)activateAlertItem:(id)alert {
 
-    if (!HookInFullScreen()) {
+    if (!CanHook()) {
         %orig;
         return;
     }
@@ -172,6 +180,33 @@ static BOOL HookInFullScreen() {
 
 %end
 
+%end
+
+%group Mail
+
+%hook MailErrorHandler
+
+- (BOOL)shouldDisplayError:(NSError *)error forAccount:(id)account mode:(int)mode {
+
+    if (!CanHook())
+        return %orig;
+
+    if (CONNECTION_FAILED && account && [account respondsToSelector:@selector(hostname)]) {
+
+        NSString * errorDescription = [error localizedDescription];
+        if ([errorDescription isEqualToString:[NSString stringWithFormat:CONNECTION_FAILED_string, [account performSelector:@selector(hostname)]]])
+            return YES;
+
+    }
+
+    return %orig;
+
+}
+
+%end
+
+%end
+
 static void reloadSettings() {
 
     NSDictionary * _settingsPlist = [NSDictionary dictionaryWithContentsOfFile:SETTINGS_FILE];
@@ -203,6 +238,9 @@ static void reloadSettings() {
     if ([_settingsPlist objectForKey:@"AIRPLANE_DATA_PROMPT"])
         AIRPLANE_DATA_PROMPT = [[_settingsPlist objectForKey:@"AIRPLANE_DATA_PROMPT"] boolValue];
 
+    if ([_settingsPlist objectForKey:@"CONNECTION_FAILED"])
+        CONNECTION_FAILED = [[_settingsPlist objectForKey:@"CONNECTION_FAILED"] boolValue];
+
     if ([_settingsPlist objectForKey:@"WorksInFullScreen"])
         WorksInFullScreen = [[_settingsPlist objectForKey:@"WorksInFullScreen"] boolValue];
 
@@ -213,11 +251,26 @@ static void reloadSettingsNotification(CFNotificationCenterRef notificationCente
     reloadSettings();
 }
 
-%ctor {
+static void initializeMailHooks() {
 
-    NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
+    %init(Mail);
 
-    %init;
+    //  load CONNECTION_FAILED string from its bundle
+    NSBundle * messageBundle = [[NSBundle alloc] initWithPath:@"/System/Library/PrivateFrameworks/Message.framework"];
+
+    if (messageBundle) {
+
+        CONNECTION_FAILED_string = [[messageBundle localizedStringForKey:@"CONNECTION_FAILED" value:@"" table:@"Delayed"] retain];
+
+        [messageBundle release];
+
+    } 
+
+}
+
+static void initializeSpringBoardHooks() {
+
+    %init(SpringBoard);
 
     //  load IMPROVE_LOCATION_ACCURACY_WIFI string from its bundle
     NSBundle * coreLocationBundle = [[NSBundle alloc] initWithPath:@"/System/Library/Frameworks/CoreLocation.framework"];
@@ -225,6 +278,8 @@ static void reloadSettingsNotification(CFNotificationCenterRef notificationCente
     if (coreLocationBundle) {
 
         IMPROVE_LOCATION_ACCURACY_WIFI_string = [[coreLocationBundle localizedStringForKey:@"IMPROVE_LOCATION_ACCURACY_WIFI" value:@"" table:@"locationd"] retain];
+
+        [coreLocationBundle release];
 
     } 
 
@@ -234,6 +289,8 @@ static void reloadSettingsNotification(CFNotificationCenterRef notificationCente
     if (carrierBundle) {
 
         CELLULAR_DATA_IS_TURNED_OFF_FOR_APP_NAME_string = [[carrierBundle localizedStringForKey:@"YOU_CAN_TURN_ON_CELLULAR_DATA_FOR_THIS_APP_IN_SETTINGS" value:@"" table:@"DataUsage"] retain];
+
+        [carrierBundle release];
 
     }
 
@@ -258,6 +315,19 @@ static void reloadSettingsNotification(CFNotificationCenterRef notificationCente
 
         CFRelease(deviceClass);
 
+    }
+}
+
+%ctor {
+
+    NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
+
+    if ([[[NSBundle mainBundle] bundleIdentifier] caseInsensitiveCompare:@"com.apple.mobilemail"]) {
+        //  time to hook mail
+        initializeMailHooks();
+    } else {
+        //  hook springboard
+        initializeSpringBoardHooks();
     }
 
     CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, (CFNotificationCallback)reloadSettingsNotification, CFSTR("com.pNre.noannoyance/settingsupdated"), NULL, CFNotificationSuspensionBehaviorCoalesce);

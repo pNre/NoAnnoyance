@@ -15,6 +15,8 @@ Supported alerts:
 + Cellular data is turned off for "AppName" disabled
 + Low disk space
 
++ The mail server "x" is not responding
+
 ---
 
 To install:

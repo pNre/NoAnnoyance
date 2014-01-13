@@ -21,14 +21,30 @@
 			<string>com.pNre.noannoyance</string>
 		</dict>
 		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>Disabled alerts</string>
+		</dict>
+		<dict>
 			<key>isController</key>
 			<true/>
 			<key>cell</key>
 			<string>PSLinkCell</string>
 			<key>label</key>
-			<string>Disabled alerts</string>
+			<string>SpringBoard</string>
 			<key>detail</key>
-			<string>NoAnnoyanceSettingsListController</string>
+			<string>NoAnnoyanceSBSettingsListController</string>
+		</dict>
+		<dict>
+			<key>isController</key>
+			<true/>
+			<key>cell</key>
+			<string>PSLinkCell</string>
+			<key>label</key>
+			<string>Mail</string>
+			<key>detail</key>
+			<string>NoAnnoyanceMLSettingsListController</string>
 		</dict>
 		<dict>
 			<key>cell</key>

@@ -1,6 +1,7 @@
 {
 	Filter = {
 		Bundles = (
+			"com.apple.mobilemail",
 			"com.apple.springboard",
 		);
 	};

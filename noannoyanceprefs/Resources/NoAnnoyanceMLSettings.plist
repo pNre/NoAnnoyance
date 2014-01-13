@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>title</key>
+	<string>Mail</string>
+	<key>items</key>
+	<array>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>Server</string>
+		</dict>
+		<dict>
+			<key>default</key>
+			<true/>
+			<key>key</key>
+			<string>CONNECTION_FAILED</string>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>PostNotification</key>
+			<string>com.pNre.noannoyance/settingsupdated</string>
+			<key>label</key>
+			<string>The server is not responding</string>
+			<key>defaults</key>
+			<string>com.pNre.noannoyance</string>
+		</dict>
+	</array>
+</dict>
+</plist>

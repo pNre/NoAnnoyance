@@ -1,5 +1,9 @@
 #import <Preferences/Preferences.h>
 
-@interface NoAnnoyanceSettingsListController: PSListController {
+@interface NoAnnoyanceSBSettingsListController: PSListController {
+}
+@end
+
+@interface NoAnnoyanceMLSettingsListController: PSListController {
 }
 @end
