@@ -39,6 +39,11 @@ static BOOL CONNECTION_FAILED = YES;
 
 static NSString * CONNECTION_FAILED_string = nil;
 
+//  Siri
+
+static BOOL SIRI_CANCEL_ALERT = NO;
+static BOOL SIRI_LISTEN_ALERT = NO;
+
 static SBWorkspace * Workspace = nil;
 
 struct ChargingInfo {
@@ -84,6 +89,12 @@ static void reloadSettings() {
 
     if ([_settingsPlist objectForKey:@"CONNECTION_FAILED"])
         CONNECTION_FAILED = [[_settingsPlist objectForKey:@"CONNECTION_FAILED"] boolValue];
+    
+    if ([_settingsPlist objectForKey:@"SIRI_CANCEL_ALERT"])
+        SIRI_CANCEL_ALERT = [[_settingsPlist objectForKey:@"SIRI_CANCEL_ALERT"] boolValue];
+    
+    if ([_settingsPlist objectForKey:@"SIRI_LISTEN_ALERT"])
+        SIRI_LISTEN_ALERT = [[_settingsPlist objectForKey:@"SIRI_LISTEN_ALERT"] boolValue];
 
     if ([_settingsPlist objectForKey:@"WorksInFullScreen"])
         WorksInFullScreen = [[_settingsPlist objectForKey:@"WorksInFullScreen"] boolValue];
@@ -99,14 +110,10 @@ static BOOL CanHook() {
 
     NSString * topApplication = [[Workspace bksWorkspace] topApplication];
 
-    NSLog(@"CanHook");
-
     if (!topApplication)
         return YES;
 
     SBApplication * runningApp = [Workspace _applicationForBundleIdentifier:topApplication frontmost:YES];
-
-    NSLog(@"%d", [runningApp statusBarHidden]);
 
     if (![runningApp statusBarHidden])
         return YES;
@@ -255,6 +262,37 @@ static BOOL CanHook() {
 
 %end
 
+%group AssistantServices
+
+%hook AVVoiceController
+
+- (BOOL)setAlertSoundFromURL:(NSURL *)url forType:(int)type {
+
+    if ((type == 1 && SIRI_LISTEN_ALERT) ||
+        (type > 1 && SIRI_CANCEL_ALERT)
+        )
+        url = [NSURL URLWithString:@"file:///Library/PreferenceBundles/NoAnnoyancePrefs.bundle/Assets/SiriSilent.caf"];
+
+    return %orig(url, type);
+
+}
+
+/*
+//  This method works only for the cancel alert... can't figure out why (yet)
+- (BOOL)playAlertSoundForType:(int)type {
+
+    if ((type == 2 || type == 3) && SIRI_CANCEL_ALERT)
+        return NO;
+
+    return %orig;
+
+}
+*/
+
+%end
+
+%end
+
 static void initializeMailStrings() {
 
     //  load CONNECTION_FAILED string from its bundle
@@ -318,6 +356,10 @@ static void initializeSpringBoardStrings() {
     }
 }
 
+static void initializeAssistantServices() {
+
+}
+
 %ctor {
 
     NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
@@ -332,7 +374,10 @@ static void initializeSpringBoardStrings() {
         //  hook springboard
         %init(SB);
         initializeSpringBoardStrings();
-
+    } else if ([bundleId caseInsensitiveCompare:@"com.apple.AssistantServices"] == NSOrderedSame) {
+        //  hook siri
+        %init(AssistantServices);
+        initializeAssistantServices();
     }
 
     CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, (CFNotificationCallback)reloadSettingsNotification, CFSTR("com.pNre.noannoyance/settingsupdated"), NULL, CFNotificationSuspensionBehaviorCoalesce);

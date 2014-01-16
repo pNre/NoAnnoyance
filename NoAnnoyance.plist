@@ -1,8 +1,12 @@
 {
 	Filter = {
+		Mode = Any;
 		Bundles = (
 			"com.apple.mobilemail",
 			"com.apple.springboard",
+		);
+		Executables = (
+			assistantd,
 		);
 	};
 }

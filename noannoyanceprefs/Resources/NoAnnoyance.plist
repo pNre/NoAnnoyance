@@ -47,10 +47,20 @@
 			<string>NoAnnoyanceMLSettingsListController</string>
 		</dict>
 		<dict>
+			<key>isController</key>
+			<true/>
+			<key>cell</key>
+			<string>PSLinkCell</string>
+			<key>label</key>
+			<string>Siri</string>
+			<key>detail</key>
+			<string>NoAnnoyanceSRSettingsListController</string>
+		</dict>
+		<dict>
 			<key>cell</key>
 			<string>PSGroupCell</string>
 			<key>footerText</key>
-			<string>NoAnnoyance (http://repo.pnre.co.vu)</string>
+			<string>NoAnnoyance (http://repo.pnre.co)</string>
 			<key>isStaticText</key>
 			<true/>
 		</dict>

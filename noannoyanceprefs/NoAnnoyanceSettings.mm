@@ -24,3 +24,15 @@
 }
 
 @end
+
+@implementation NoAnnoyanceSRSettingsListController
+
+- (id)specifiers {
+
+    if (_specifiers == nil)
+        _specifiers = [[self loadSpecifiersFromPlistName:@"NoAnnoyanceSRSettings" target:self] retain];
+
+    return _specifiers;
+}
+
+@end

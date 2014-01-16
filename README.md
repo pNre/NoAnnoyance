@@ -17,9 +17,11 @@ Supported alerts:
 
 + The mail server "x" is not responding
 
++ Silence siri alert tones
+
 ---
 
 To install:
 
-1. Add `repo.pnre.co.vu` as a new source in Cydia
+1. Add repo.pnre.co as a new source in Cydia
 2. Search for `NoAnnoyance` and install it
