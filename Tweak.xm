@@ -30,6 +30,8 @@ static BOOL LOW_BATTERY_ALERT = YES;
 
 static BOOL LOW_DISK_SPACE_ALERT = YES;
 
+static BOOL UPDATED_APP_DOT = NO;
+
 static NSString * IMPROVE_LOCATION_ACCURACY_WIFI_string = nil;
 static NSString * CELLULAR_DATA_IS_TURNED_OFF_FOR_APP_NAME_string = nil;
 static NSString * ACCESSORY_UNRELIABLE_string = nil;
@@ -95,6 +97,9 @@ static void reloadSettings() {
     
     if ([_settingsPlist objectForKey:@"SIRI_LISTEN_ALERT"])
         SIRI_LISTEN_ALERT = [[_settingsPlist objectForKey:@"SIRI_LISTEN_ALERT"] boolValue];
+    
+    if ([_settingsPlist objectForKey:@"UPDATED_APP_DOT"])
+        UPDATED_APP_DOT = [[_settingsPlist objectForKey:@"UPDATED_APP_DOT"] boolValue];
 
     if ([_settingsPlist objectForKey:@"WorksInFullScreen"])
         WorksInFullScreen = [[_settingsPlist objectForKey:@"WorksInFullScreen"] boolValue];
@@ -123,6 +128,19 @@ static BOOL CanHook() {
 }
 
 %group SB
+
+%hook SBApplication
+
+- (BOOL)_isRecentlyUpdated {
+
+    if (!UPDATED_APP_DOT)
+        return %orig;
+
+    return NO;
+    
+}
+
+%end
 
 %hook SBWorkspace
 
@@ -250,7 +268,7 @@ static BOOL CanHook() {
 
         NSString * errorDescription = [error localizedDescription];
         if ([errorDescription isEqualToString:[NSString stringWithFormat:CONNECTION_FAILED_string, [account performSelector:@selector(hostname)]]])
-            return YES;
+            return NO;
 
     }
 

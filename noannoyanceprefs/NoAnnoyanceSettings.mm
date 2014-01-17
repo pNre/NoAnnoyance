@@ -25,7 +25,9 @@
 
 @end
 
-@implementation NoAnnoyanceSRSettingsListController
+@implementation NoAnnoyanceSRSettingsListController {
+    BOOL _settingsChanged;
+}
 
 - (id)specifiers {
 
@@ -33,6 +35,34 @@
         _specifiers = [[self loadSpecifiersFromPlistName:@"NoAnnoyanceSRSettings" target:self] retain];
 
     return _specifiers;
+}
+
+- (void)settingsChangedWithBlock:(void (^)(void))block {
+
+    if (!_settingsChanged) {
+        _settingsChanged = YES;
+        block();
+    }
+
+}
+
+- (void)setPreferenceValue:(id)value specifier:(PSSpecifier *)spec {
+
+    [super setPreferenceValue:value specifier:spec];
+
+    [self settingsChangedWithBlock:^{
+        UIBarButtonItem *respringButton = [[UIBarButtonItem alloc] initWithTitle:@"Respring" style:UIBarButtonItemStyleDone target:self action:@selector(respring:)];
+        [[self navigationItem] setRightBarButtonItem:respringButton];
+        [respringButton release];
+    }];
+
+}
+
+- (void)respring:(id)sender {
+
+    setuid(0);
+    system("killall SpringBoard");
+
 }
 
 @end
