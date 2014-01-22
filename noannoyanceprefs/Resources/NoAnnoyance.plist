@@ -10,15 +10,125 @@
 			<key>default</key>
 			<true/>
 			<key>key</key>
-			<string>WorksInFullScreen</string>
+			<string>GloballyEnabled</string>
 			<key>cell</key>
 			<string>PSSwitchCell</string>
 			<key>PostNotification</key>
 			<string>com.pNre.noannoyance/settingsupdated</string>
 			<key>label</key>
-			<string>Works in fullscreen apps</string>
+			<string>Always enable</string>
 			<key>defaults</key>
 			<string>com.pNre.noannoyance</string>
+		</dict>
+		<dict>
+			<key>isController</key>
+			<true/>
+			<key>bundle</key>
+			<string>AppList</string>
+			<key>cell</key>
+			<string>PSLinkCell</string>
+			<key>label</key>
+			<string>Enable in...</string>
+			<key>ALSettingsPath</key>
+			<string>/var/mobile/Library/Preferences/com.pNre.noannoyance.plist</string>
+			<key>ALSettingsKeyPrefix</key>
+			<string>EnabledApps-</string>
+			<key>ALChangeNotification</key>
+			<string>com.pNre.noannoyance/settingsupdated</string>
+			<key>ALAllowsSelection</key>
+			<string>1</string>
+			<key>ALSectionDescriptors</key>
+			<array>
+				<dict>
+					<key>title</key>
+					<string>System Applications</string>
+					<key>predicate</key>
+					<string>isSystemApplication = TRUE</string>
+					<key>cell-class-name</key>
+					<string>ALSwitchCell</string>
+					<key>icon-size</key>
+					<string>29</string>
+					<key>suppress-hidden-apps</key>
+					<string>1</string>
+				</dict>
+				<dict>
+					<key>title</key>
+					<string>User Applications</string>
+					<key>predicate</key>
+					<string>isSystemApplication = FALSE</string>
+					<key>cell-class-name</key>
+					<string>ALSwitchCell</string>
+					<key>icon-size</key>
+					<string>29</string>
+					<key>suppress-hidden-apps</key>
+					<string>1</string>
+				</dict>
+			</array>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>Fullscreen</string>
+		</dict>
+		<dict>
+			<key>default</key>
+			<false/>
+			<key>key</key>
+			<string>GloballyEnabledInFullScreen</string>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>PostNotification</key>
+			<string>com.pNre.noannoyance/settingsupdated</string>
+			<key>label</key>
+			<string>Always enable</string>
+			<key>defaults</key>
+			<string>com.pNre.noannoyance</string>
+		</dict>
+		<dict>
+			<key>isController</key>
+			<true/>
+			<key>bundle</key>
+			<string>AppList</string>
+			<key>cell</key>
+			<string>PSLinkCell</string>
+			<key>label</key>
+			<string>Enable while in fullscreen in...</string>
+			<key>ALSettingsPath</key>
+			<string>/var/mobile/Library/Preferences/com.pNre.noannoyance.plist</string>
+			<key>ALSettingsKeyPrefix</key>
+			<string>EnabledAppsInFullscreen-</string>
+			<key>ALChangeNotification</key>
+			<string>com.pNre.noannoyance/settingsupdated</string>
+			<key>ALAllowsSelection</key>
+			<string>1</string>
+			<key>ALSectionDescriptors</key>
+			<array>
+				<dict>
+					<key>title</key>
+					<string>System Applications</string>
+					<key>predicate</key>
+					<string>isSystemApplication = TRUE</string>
+					<key>cell-class-name</key>
+					<string>ALSwitchCell</string>
+					<key>icon-size</key>
+					<string>29</string>
+					<key>suppress-hidden-apps</key>
+					<string>1</string>
+				</dict>
+				<dict>
+					<key>title</key>
+					<string>User Applications</string>
+					<key>predicate</key>
+					<string>isSystemApplication = FALSE</string>
+					<key>cell-class-name</key>
+					<string>ALSwitchCell</string>
+					<key>icon-size</key>
+					<string>29</string>
+					<key>suppress-hidden-apps</key>
+					<string>1</string>
+				</dict>
+			</array>
 		</dict>
 		<dict>
 			<key>cell</key>

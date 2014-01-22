@@ -13,7 +13,12 @@
 #define SETTINGS_FILE @"/var/mobile/Library/Preferences/com.pNre.noannoyance.plist"
 
 //  Global
-static BOOL WorksInFullScreen = YES;
+static BOOL GloballyEnabledInFullScreen = NO;
+static BOOL GloballyEnabled = YES;
+
+//  Apps
+static NSMutableArray * EnabledApps = nil;
+static NSMutableArray * EnabledAppsInFullscreen = nil;
 
 //  SpringBoard
 static BOOL IMPROVE_LOCATION_ACCURACY_WIFI = YES;
@@ -60,7 +65,35 @@ struct ChargingInfo {
 
 static void reloadSettings() {
 
+    if (!EnabledApps)
+        EnabledApps = [[NSMutableArray alloc] init];
+
+    if (!EnabledAppsInFullscreen)
+        EnabledAppsInFullscreen = [[NSMutableArray alloc] init];
+
+    [EnabledApps removeAllObjects];
+    [EnabledAppsInFullscreen removeAllObjects];
+
     NSDictionary * _settingsPlist = [NSDictionary dictionaryWithContentsOfFile:SETTINGS_FILE];
+
+    [_settingsPlist enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL * stop) {
+
+        if (![key hasPrefix:@"EnabledApps-"] && ![key hasPrefix:@"EnabledAppsInFullscreen-"])
+            return;
+
+        if ([key hasPrefix:@"EnabledApps-"]) {
+            if ([obj boolValue]) {
+                [EnabledApps addObject:[[key substringFromIndex:[@"EnabledApps-" length]] lowercaseString]];
+            }
+        }
+
+        if ([key hasPrefix:@"EnabledAppsInFullscreen-"]) {
+            if ([obj boolValue]) {
+                [EnabledAppsInFullscreen addObject:[[key substringFromIndex:[@"EnabledAppsInFullscreen-" length]] lowercaseString]];
+            }
+        }
+
+    }];
 
     if ([_settingsPlist objectForKey:@"IMPROVE_LOCATION_ACCURACY_WIFI"])
         IMPROVE_LOCATION_ACCURACY_WIFI = [[_settingsPlist objectForKey:@"IMPROVE_LOCATION_ACCURACY_WIFI"] boolValue];
@@ -101,8 +134,11 @@ static void reloadSettings() {
     if ([_settingsPlist objectForKey:@"UPDATED_APP_DOT"])
         UPDATED_APP_DOT = [[_settingsPlist objectForKey:@"UPDATED_APP_DOT"] boolValue];
 
-    if ([_settingsPlist objectForKey:@"WorksInFullScreen"])
-        WorksInFullScreen = [[_settingsPlist objectForKey:@"WorksInFullScreen"] boolValue];
+    if ([_settingsPlist objectForKey:@"GloballyEnabledInFullScreen"])
+        GloballyEnabledInFullScreen = [[_settingsPlist objectForKey:@"GloballyEnabledInFullScreen"] boolValue];
+
+    if ([_settingsPlist objectForKey:@"GloballyEnabled"])
+        GloballyEnabled = [[_settingsPlist objectForKey:@"GloballyEnabled"] boolValue];
 
 }
 
@@ -116,14 +152,27 @@ static BOOL CanHook() {
     NSString * topApplication = [[Workspace bksWorkspace] topApplication];
 
     if (!topApplication)
-        return YES;
+        return GloballyEnabled;
+
+    BOOL hook = GloballyEnabled;
+    BOOL hookInFS = GloballyEnabledInFullScreen;
+
+    //  Check bundle againts our lists
+    if (!hook) {
+        hook = [EnabledApps containsObject:[topApplication lowercaseString]];
+    }
 
     SBApplication * runningApp = [Workspace _applicationForBundleIdentifier:topApplication frontmost:YES];
 
     if (![runningApp statusBarHidden])
-        return YES;
+        return hook;
 
-    return WorksInFullScreen;
+    //  Check bundle againts our lists
+    if (!hookInFS) {
+        hookInFS = [EnabledAppsInFullscreen containsObject:[topApplication lowercaseString]];
+    }
+
+    return hookInFS;
 
 }
 
