@@ -25,6 +25,18 @@
 
 @end
 
+@implementation NoAnnoyanceGCSettingsListController
+
+- (id)specifiers {
+
+    if (_specifiers == nil)
+        _specifiers = [[self loadSpecifiersFromPlistName:@"NoAnnoyanceGCSettings" target:self] retain];
+
+    return _specifiers;
+}
+
+@end
+
 @implementation NoAnnoyanceSRSettingsListController {
     BOOL _settingsChanged;
 }

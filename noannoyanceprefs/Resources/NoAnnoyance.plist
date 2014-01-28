@@ -16,7 +16,7 @@
 			<key>PostNotification</key>
 			<string>com.pNre.noannoyance/settingsupdated</string>
 			<key>label</key>
-			<string>Always enable</string>
+			<string>Block alerts in every app</string>
 			<key>defaults</key>
 			<string>com.pNre.noannoyance</string>
 		</dict>
@@ -28,7 +28,7 @@
 			<key>cell</key>
 			<string>PSLinkCell</string>
 			<key>label</key>
-			<string>Enable in...</string>
+			<string>Only block in...</string>
 			<key>ALSettingsPath</key>
 			<string>/var/mobile/Library/Preferences/com.pNre.noannoyance.plist</string>
 			<key>ALSettingsKeyPrefix</key>
@@ -69,7 +69,7 @@
 			<key>cell</key>
 			<string>PSGroupCell</string>
 			<key>label</key>
-			<string>Fullscreen</string>
+			<string>When in fullscreen</string>
 		</dict>
 		<dict>
 			<key>default</key>
@@ -81,7 +81,7 @@
 			<key>PostNotification</key>
 			<string>com.pNre.noannoyance/settingsupdated</string>
 			<key>label</key>
-			<string>Always enable</string>
+			<string>Block alerts in every alert</string>
 			<key>defaults</key>
 			<string>com.pNre.noannoyance</string>
 		</dict>
@@ -93,7 +93,7 @@
 			<key>cell</key>
 			<string>PSLinkCell</string>
 			<key>label</key>
-			<string>Enable while in fullscreen in...</string>
+			<string>Only block in...</string>
 			<key>ALSettingsPath</key>
 			<string>/var/mobile/Library/Preferences/com.pNre.noannoyance.plist</string>
 			<key>ALSettingsKeyPrefix</key>
@@ -155,6 +155,16 @@
 			<string>Mail</string>
 			<key>detail</key>
 			<string>NoAnnoyanceMLSettingsListController</string>
+		</dict>
+		<dict>
+			<key>isController</key>
+			<true/>
+			<key>cell</key>
+			<string>PSLinkCell</string>
+			<key>label</key>
+			<string>Game Center</string>
+			<key>detail</key>
+			<string>NoAnnoyanceGCSettingsListController</string>
 		</dict>
 		<dict>
 			<key>isController</key>

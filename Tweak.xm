@@ -51,6 +51,9 @@ static NSString * CONNECTION_FAILED_string = nil;
 static BOOL SIRI_CANCEL_ALERT = NO;
 static BOOL SIRI_LISTEN_ALERT = NO;
 
+//  Game Center
+static BOOL GC_BANNER = YES;
+
 static SBWorkspace * Workspace = nil;
 
 struct ChargingInfo {
@@ -133,6 +136,9 @@ static void reloadSettings() {
     
     if ([_settingsPlist objectForKey:@"UPDATED_APP_DOT"])
         UPDATED_APP_DOT = [[_settingsPlist objectForKey:@"UPDATED_APP_DOT"] boolValue];
+    
+    if ([_settingsPlist objectForKey:@"GC_BANNER"])
+        GC_BANNER = [[_settingsPlist objectForKey:@"GC_BANNER"] boolValue];
 
     if ([_settingsPlist objectForKey:@"GloballyEnabledInFullScreen"])
         GloballyEnabledInFullScreen = [[_settingsPlist objectForKey:@"GloballyEnabledInFullScreen"] boolValue];
@@ -360,6 +366,23 @@ static BOOL CanHook() {
 
 %end
 
+%group GameCenter
+
+%hook GKNotificationBannerWindow
+
+- (void)_showBanner:(id)banner showDimmingView:(BOOL)showDimmingView {
+
+    if (!CanHook() || !GC_BANNER) {
+        %orig;
+        return;
+    }
+
+}
+
+%end
+
+%end
+
 static void initializeMailStrings() {
 
     //  load CONNECTION_FAILED string from its bundle
@@ -423,10 +446,6 @@ static void initializeSpringBoardStrings() {
     }
 }
 
-static void initializeAssistantServices() {
-
-}
-
 %ctor {
 
     NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
@@ -444,8 +463,9 @@ static void initializeAssistantServices() {
     } else if ([bundleId caseInsensitiveCompare:@"com.apple.AssistantServices"] == NSOrderedSame) {
         //  hook siri
         %init(AssistantServices);
-        initializeAssistantServices();
     }
+
+    %init(GameCenter);
 
     CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, (CFNotificationCallback)reloadSettingsNotification, CFSTR("com.pNre.noannoyance/settingsupdated"), NULL, CFNotificationSuspensionBehaviorCoalesce);
     reloadSettings();

@@ -4,6 +4,7 @@
 		Bundles = (
 			"com.apple.mobilemail",
 			"com.apple.springboard",
+			"com.apple.GameCenterUI",
 		);
 		Executables = (
 			assistantd,
