@@ -1,6 +1,7 @@
 #import <substrate.h>
 #import <CoreFoundation/CoreFoundation.h>
 
+#import <SpringBoard/SBAlertItem.h>
 #import <SpringBoard/SBAlertItemsController.h>
 #import <SpringBoard/SBUserNotificationAlert.h>
 #import <SpringBoard/SBApplication.h>
@@ -9,6 +10,8 @@
 #import <MobileGestalt/MobileGestalt.h>
 
 #import <UIKit/UIKit.h>
+
+#import "Logging.h"
 
 #define SETTINGS_FILE @"/var/mobile/Library/Preferences/com.pNre.noannoyance.plist"
 
@@ -240,6 +243,20 @@ static BOOL CanHook() {
 
 %hook SBAlertItemsController
 
+static void SBAlertItemDiscard(SBAlertItemsController * controller, SBAlertItem * alert) {
+
+    if ([alert isKindOfClass:[%c(SBUserNotificationAlert) class]]) {
+
+        [alert performSelector:@selector(cancel)];
+
+    } else {
+
+        [controller deactivateAlertItem:alert];
+
+    }
+
+}
+
 - (void)activateAlertItem:(id)alert {
 
     if (!CanHook()) {
@@ -249,7 +266,7 @@ static BOOL CanHook() {
 
     if ([alert isKindOfClass:[%c(SBLowPowerAlertItem) class]] && LOW_BATTERY_ALERT) {
 
-        [self deactivateAlertItem:alert];
+        SBAlertItemDiscard(self, alert);
         return;
 
     }
@@ -267,7 +284,7 @@ static BOOL CanHook() {
 
             if (cellPrompt || dataPrompt) {
 
-                [self deactivateAlertItem:alert];
+                SBAlertItemDiscard(self, alert);
                 return;
 
             }
@@ -277,14 +294,14 @@ static BOOL CanHook() {
 
     if ([alert isKindOfClass:[%c(SBEdgeActivationAlertItem) class]] && EDGE_ALERT) {
 
-        [self deactivateAlertItem:alert];
+        SBAlertItemDiscard(self, alert);
         return;
 
     }
 
     if ([alert isKindOfClass:[%c(SBDiskSpaceAlertItem) class]] && LOW_DISK_SPACE_ALERT) {
 
-        [self deactivateAlertItem:alert];
+        SBAlertItemDiscard(self, alert);
         return;
 
     }
@@ -297,13 +314,14 @@ static BOOL CanHook() {
             ([[alert alertMessage] isEqual:CELLULAR_DATA_IS_TURNED_OFF_FOR_APP_NAME_string] && CELLULAR_DATA_IS_TURNED_OFF_FOR_APP_NAME) ||
             ([[alert alertHeader] isEqual:ACCESSORY_UNRELIABLE_string] && ACCESSORY_UNRELIABLE)) {
             
-            [self deactivateAlertItem:alert];
+            SBAlertItemDiscard(self, alert);
             return;
             
         }
     }
  
     %orig;
+
 }
 
 %end

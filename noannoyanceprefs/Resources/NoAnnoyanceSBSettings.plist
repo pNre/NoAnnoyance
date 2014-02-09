@@ -89,6 +89,8 @@
 			<string>com.pNre.noannoyance</string>
 		</dict>
 		<dict>
+			<key>footerText</key>
+			<string>* These options only block the alerts.</string>
 			<key>cell</key>
 			<string>PSGroupCell</string>
 			<key>label</key>

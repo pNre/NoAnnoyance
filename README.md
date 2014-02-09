@@ -1,7 +1,7 @@
 NoAnnoyance
 ============
 
-A CydiaSubstrate tweak to disable annoying iOS7 messages (and support uncertified Lightning cables).
+A CydiaSubstrate tweak to disable annoying iOS7 messages.
 
 Supported alerts:
 
@@ -18,6 +18,10 @@ Supported alerts:
 + The mail server "x" is not responding
 
 + Silence siri alert tones
+
++ Disable updated app dot
+
++ Disable game center welcome banner
 
 ---
 
