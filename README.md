@@ -14,6 +14,8 @@ Supported alerts:
 + Low battery
 + Cellular data is turned off for "AppName" disabled
 + Low disk space
++ Trust this computer
++ Shake to undo
 
 + The mail server "x" is not responding
 

@@ -2,9 +2,7 @@
 	Filter = {
 		Mode = Any;
 		Bundles = (
-			"com.apple.mobilemail",
-			"com.apple.springboard",
-			"com.apple.GameCenterUI",
+			"com.apple.UIKit",
 		);
 		Executables = (
 			assistantd,

@@ -192,6 +192,64 @@
 			<key>defaults</key>
 			<string>com.pNre.noannoyance</string>
 		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>Editing</string>
+			<key>isStaticText</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>default</key>
+			<false/>
+			<key>key</key>
+			<string>SHAKE_TO_UNDO</string>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>PostNotification</key>
+			<string>com.pNre.noannoyance/settingsupdated</string>
+			<key>label</key>
+			<string>Shake to undo</string>
+			<key>defaults</key>
+			<string>com.pNre.noannoyance</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>Security</string>
+			<key>isStaticText</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>default</key>
+			<integer>0</integer>
+			<key>key</key>
+			<string>TRUST_THIS_COMPUTER</string>
+			<key>cell</key>
+			<string>PSLinkListCell</string>
+			<key>PostNotification</key>
+			<string>com.pNre.noannoyance/settingsupdated</string>
+			<key>label</key>
+			<string>Trust this computer</string>
+			<key>defaults</key>
+			<string>com.pNre.noannoyance</string>
+			<key>detail</key>
+			<string>PSListItemsController</string>
+			<key>validTitles</key>
+			<array>
+				<string>Ask every time</string>
+				<string>Don&apos;t trust</string>
+				<string>Always trust</string>
+			</array>
+			<key>validValues</key>
+			<array>
+				<integer>0</integer>
+				<integer>1</integer>
+				<integer>2</integer>
+			</array>
+		</dict>
 	</array>
 </dict>
 </plist>

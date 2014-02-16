@@ -40,6 +40,8 @@ static BOOL LOW_DISK_SPACE_ALERT = YES;
 
 static BOOL UPDATED_APP_DOT = NO;
 
+static BOOL SHAKE_TO_UNDO = NO;
+
 static NSString * IMPROVE_LOCATION_ACCURACY_WIFI_string = nil;
 static NSString * CELLULAR_DATA_IS_TURNED_OFF_FOR_APP_NAME_string = nil;
 static NSString * ACCESSORY_UNRELIABLE_string = nil;
@@ -56,6 +58,11 @@ static BOOL SIRI_LISTEN_ALERT = NO;
 
 //  Game Center
 static BOOL GC_BANNER = YES;
+
+//  Security
+static NSInteger TRUST_THIS_COMPUTER = 0;
+
+static NSString * TRUST_THIS_COMPUTER_string = nil;
 
 static SBWorkspace * Workspace = nil;
 
@@ -142,6 +149,12 @@ static void reloadSettings() {
     
     if ([_settingsPlist objectForKey:@"GC_BANNER"])
         GC_BANNER = [[_settingsPlist objectForKey:@"GC_BANNER"] boolValue];
+
+    if ([_settingsPlist objectForKey:@"TRUST_THIS_COMPUTER"])
+        TRUST_THIS_COMPUTER = [[_settingsPlist objectForKey:@"TRUST_THIS_COMPUTER"] integerValue];
+
+    if ([_settingsPlist objectForKey:@"SHAKE_TO_UNDO"])
+        SHAKE_TO_UNDO = [[_settingsPlist objectForKey:@"SHAKE_TO_UNDO"] boolValue];
 
     if ([_settingsPlist objectForKey:@"GloballyEnabledInFullScreen"])
         GloballyEnabledInFullScreen = [[_settingsPlist objectForKey:@"GloballyEnabledInFullScreen"] boolValue];
@@ -247,7 +260,19 @@ static void SBAlertItemDiscard(SBAlertItemsController * controller, SBAlertItem 
 
     if ([alert isKindOfClass:[%c(SBUserNotificationAlert) class]]) {
 
-        [alert performSelector:@selector(cancel)];
+        if ([[(SBUserNotificationAlert *)alert alertHeader] isEqual:TRUST_THIS_COMPUTER_string]) {
+
+            int response = (TRUST_THIS_COMPUTER == 2);
+
+            [(SBUserNotificationAlert *)alert _setActivated:NO];
+            [(SBUserNotificationAlert *)alert _sendResponse:response];
+
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"SBUserNotificationDoneNotification" object:alert];
+
+            [(SBUserNotificationAlert *)alert _cleanup];
+
+        } else
+            [(SBUserNotificationAlert *)alert cancel];
 
     } else {
 
@@ -258,6 +283,9 @@ static void SBAlertItemDiscard(SBAlertItemsController * controller, SBAlertItem 
 }
 
 - (void)activateAlertItem:(id)alert {
+
+for (int i = 0; i < 10; ++i)
+    %log;
 
     if (!CanHook()) {
         %orig;
@@ -312,7 +340,8 @@ static void SBAlertItemDiscard(SBAlertItemsController * controller, SBAlertItem 
         if (
             ([[alert alertMessage] isEqual:IMPROVE_LOCATION_ACCURACY_WIFI_string] && IMPROVE_LOCATION_ACCURACY_WIFI) ||
             ([[alert alertMessage] isEqual:CELLULAR_DATA_IS_TURNED_OFF_FOR_APP_NAME_string] && CELLULAR_DATA_IS_TURNED_OFF_FOR_APP_NAME) ||
-            ([[alert alertHeader] isEqual:ACCESSORY_UNRELIABLE_string] && ACCESSORY_UNRELIABLE)) {
+            ([[alert alertHeader] isEqual:ACCESSORY_UNRELIABLE_string] && ACCESSORY_UNRELIABLE) ||
+            ([[alert alertHeader] isEqual:TRUST_THIS_COMPUTER_string] && TRUST_THIS_COMPUTER)) {
             
             SBAlertItemDiscard(self, alert);
             return;
@@ -462,7 +491,37 @@ static void initializeSpringBoardStrings() {
         CFRelease(deviceClass);
 
     }
+
+    //  TRUST_DIALOG_HEADER
+    NSBundle * LockdownLocalizationBundle = [[NSBundle alloc] initWithPath:@"/System/Library/Lockdown/Localization.bundle"];
+
+    if (LockdownLocalizationBundle) {
+
+        TRUST_THIS_COMPUTER_string = [[LockdownLocalizationBundle localizedStringForKey:@"TRUST_DIALOG_HEADER" value:@"" table:@"Pairing"] retain];
+
+        [LockdownLocalizationBundle release];
+
+    }
+
 }
+
+%group All
+
+%hook UIApplication
+
+- (BOOL)applicationSupportsShakeToEdit {
+
+    if (!CanHook() || !SHAKE_TO_UNDO) {
+        return %orig;
+    }
+
+    return NO;
+
+}
+
+%end
+
+%end
 
 %ctor {
 
@@ -483,6 +542,7 @@ static void initializeSpringBoardStrings() {
         %init(AssistantServices);
     }
 
+    %init(All);
     %init(GameCenter);
 
     CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, (CFNotificationCallback)reloadSettingsNotification, CFSTR("com.pNre.noannoyance/settingsupdated"), NULL, CFNotificationSuspensionBehaviorCoalesce);
