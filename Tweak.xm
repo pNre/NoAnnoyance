@@ -271,9 +271,12 @@ static void SBAlertItemDiscard(SBAlertItemsController * controller, SBAlertItem 
 
             [(SBUserNotificationAlert *)alert _cleanup];
 
-        } else
-            [(SBUserNotificationAlert *)alert cancel];
+        } else {
 
+            [controller deactivateAlertItem:alert];
+            [(SBUserNotificationAlert *)alert cancel];
+            
+        }
     } else {
 
         [controller deactivateAlertItem:alert];
@@ -283,9 +286,6 @@ static void SBAlertItemDiscard(SBAlertItemsController * controller, SBAlertItem 
 }
 
 - (void)activateAlertItem:(id)alert {
-
-for (int i = 0; i < 10; ++i)
-    %log;
 
     if (!CanHook()) {
         %orig;

@@ -64,7 +64,7 @@
 			<key>PostNotification</key>
 			<string>com.pNre.noannoyance/settingsupdated</string>
 			<key>label</key>
-			<string>Turn Off Airplane Mode or Use Wi-Fi</string>
+			<string>Turn Off Airplane Mode</string>
 			<key>defaults</key>
 			<string>com.pNre.noannoyance</string>
 		</dict>
@@ -188,7 +188,7 @@
 			<key>PostNotification</key>
 			<string>com.pNre.noannoyance/settingsupdated</string>
 			<key>label</key>
-			<string>Updated dot</string>
+			<string>"App updated" dot</string>
 			<key>defaults</key>
 			<string>com.pNre.noannoyance</string>
 		</dict>
