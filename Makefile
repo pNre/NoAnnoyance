@@ -7,7 +7,7 @@ include theos/makefiles/common.mk
 # this is baaad
 THEOS_INCLUDE_PATH = include -I /opt/theos/include
 
-export ARCHS = armv7 armv7s arm64
+export ARCHS = armv7 arm64
 
 TWEAK_NAME = NoAnnoyance
 NoAnnoyance_FILES = Tweak.xm

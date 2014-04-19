@@ -81,7 +81,7 @@
 			<key>PostNotification</key>
 			<string>com.pNre.noannoyance/settingsupdated</string>
 			<key>label</key>
-			<string>Block alerts in every alert</string>
+			<string>Block alerts in every app</string>
 			<key>defaults</key>
 			<string>com.pNre.noannoyance</string>
 		</dict>
