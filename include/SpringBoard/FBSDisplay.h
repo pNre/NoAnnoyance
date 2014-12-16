@@ -1,0 +1,2 @@
+@interface FBSDisplay : NSObject
+@end

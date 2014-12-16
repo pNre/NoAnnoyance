@@ -5,7 +5,7 @@ include theos/makefiles/common.mk
 export ARCHS = armv7 armv7s arm64
 
 BUNDLE_NAME = NoAnnoyancePrefs
-NoAnnoyancePrefs_FILES = NoAnnoyancePrefs.mm NoAnnoyanceSettings.mm
+NoAnnoyancePrefs_FILES = NoAnnoyancePrefs.mm NoAnnoyanceSettings.mm NoAnnoyanceHeader.mm
 NoAnnoyancePrefs_INSTALL_PATH = /Library/PreferenceBundles
 NoAnnoyancePrefs_FRAMEWORKS = UIKit
 NoAnnoyancePrefs_PRIVATE_FRAMEWORKS = Preferences

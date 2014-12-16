@@ -1,7 +1,8 @@
-@interface SBAlertItemsController
+@interface SBAlertItemsController : NSObject
 
-+ (id)sharedInstance;
++ (instancetype)sharedInstance;
 
+- (void)activateAlertItem:(id)alertItem animated:(BOOL)animated;
 - (void)deactivateAlertItem:(id)alertItem;
 
 @end

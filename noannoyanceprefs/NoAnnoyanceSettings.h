@@ -8,10 +8,6 @@
 }
 @end
 
-@interface NoAnnoyanceSRSettingsListController : PSListController {
-}
-@end
-
 @interface NoAnnoyanceGCSettingsListController : PSListController {
 }
 @end

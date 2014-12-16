@@ -4,8 +4,5 @@
 		Bundles = (
 			"com.apple.UIKit",
 		);
-		Executables = (
-			assistantd,
-		);
 	};
 }
